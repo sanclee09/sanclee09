@@ -1,0 +1,63 @@
+import numpy as np
+import math
+from matplotlib import pyplot as plt
+
+# setting the axes at the centre
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+ax.spines['left'].set_position('center')
+ax.spines['bottom'].set_position('zero')
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+
+
+def m(X):
+    if (X >= -1 and X<-0.5):
+        return 0.5*((X+2)**2)
+    elif (X >= -0.5 and X < 0):
+        return (X/2) +0.875
+    elif (X>0 and X<=0.5):
+        return -5*((X-0.2)**2)+1.075
+    elif (X>0.5 and X<1):
+        return X+0.125
+    else:
+        return "error"
+
+def sigma(X):
+    return 0.2-(0.1*math.cos(2*math.pi*X))
+
+def sim_data(n):
+    data = []
+    while len(data)<n:
+        x = np.random.normal(0, 1, 1)
+        if x <=1 and x>=-1:
+            e=np.random.normal(0, 1, 1)
+            y = m(x)+sigma(x)*e
+            data.append([x,y]);
+    return data
+
+
+for i in sim_data(200):
+    plt.plot(i[0],i[1],',',color='black')
+
+# 100 linearly spaced numbers    
+x1 = np.linspace(-1,-0.5,100)
+x2 = np.linspace(-0.5,0,100)
+x3 = np.linspace(0,0.5,100)
+x4 = np.linspace(0.5,1,100)
+def m1(x):
+    return 0.5*((x+2)**2)
+def m2(x):
+    return (x/2) +0.875
+def m3(x):
+    return -5*(x-0.2)**2+1.075
+def m4(x):
+    return x+0.125
+
+# plot the function
+plt.plot(x1, m1(x1),'black')
+plt.plot(x2, m2(x2),'black')
+plt.plot(x3, m3(x3),'black')
+plt.plot(x4, m4(x4),'black')
