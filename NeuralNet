@@ -61,3 +61,73 @@ plt.plot(x1, m1(x1),'black')
 plt.plot(x2, m2(x2),'black')
 plt.plot(x3, m3(x3),'black')
 plt.plot(x4, m4(x4),'black')
+
+
+#variables for network architecture
+
+def estimator(neurons):
+    d=1
+    L=2
+    #defining the estimator
+    def neuralest(K):
+        model = keras.Sequential()
+        #input layer
+        model.add(keras.layers.Dense(1, activation='relu', input_shape=(1,)))
+        #hidden layers
+        for i in np.arange(2):
+            model.add(keras.layers.Dense(K, activation='relu'))
+        #output layer
+        model.add(keras.layers.Dense(1))
+        model.compile(optimizer='adam',loss='mean_squared_error')
+        #training the data
+        model.fit(x=np.array(x),y=np.array(y),epochs=1000,batch_size=200,verbose=2)
+        #defining xv 
+        xv=np.linspace(-1,1,201, endpoint=False)[0:200]
+        #producing yv
+        yv=model.predict(x=xv,batch_size=len(xv))
+        return yv
+
+    yv=neuralest(neurons)
+
+
+    def yvleft(yv_sample):   
+        while yv_sample[0]==yv_sample[15] or yv_sample[11]==yv_sample[32]:
+            yv_sample=neuralest(neurons)
+            print(yv_sample)
+        return yv_sample
+
+    yvl=yvleft(yv)
+
+    def yvright(yv_sample):
+        while yv_sample[110]==yv_sample[115] or yv_sample[125]==yv_sample[180]:
+            yv_sample=neuralest(neurons)
+            print(yv_sample)
+        return yv_sample
+
+    yvr=yvright(yv)
+
+    yvnew=[]
+    for i in range(0,101):
+        yvnew.append(yvl[i])
+    for i in range(101,200):
+        yvnew.append(yvr[i])
+    mse1 = mean_squared_error(y,yvnew)
+    return yvnew, mse1
+
+#best_yvnew,lowest_mse=estimator(500)
+#print(best_yvnew,lowest_mse)
+
+def getmin():
+    lowest_mse=1
+    best_yvnew=[]
+    mse_watch=[]
+    for i in range(0,5):
+        yvnew,mse1=estimator(500)
+        if 0.9<mse1<lowest_mse:
+            lowest_mse=mse1
+            best_yvnew=yvnew
+            mse_watch.append(mse1)
+    return best_yvnew, lowest_mse, mse_watch
+
+best_yvnew,lowest_mse, mse_watch =getmin()
+print(best_yvnew,lowest_mse, mse_watch)
